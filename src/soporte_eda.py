@@ -254,3 +254,25 @@ def replace_distritos(columna_a_cambiar, columna_geopy):
         return direccion if direccion else np.nan
     
     return columna_a_cambiar
+
+def visualizar_categoricas(df, dependiente, tamanio, tipo_graf="bar", bigote=1.5, metrica="mean"):
+    df_categoricas=df.select_dtypes(include = "O")
+    num_filas=math.ceil(len(df_categoricas.columns)/2)
+
+    fig, axes = plt.subplots(nrows= num_filas, ncols= 2, figsize= tamanio)
+    axes= axes.flat
+
+    for indice, col in enumerate(df_categoricas.columns):
+        if tipo_graf.lower()== "box":
+            sns.boxplot(x= col, y = dependiente, data= df, whis = bigote, hue=col, legend=False, ax= axes[indice])
+
+        elif tipo_graf.lower()== "bar":
+            sns.barplot(x=col, y = dependiente, ax= axes[indice], data= df, estimator=metrica, palette="mako")
+            axes[indice].set_xticklabels(axes[indice].get_xticklabels(), rotation=45)
+
+
+        else:
+            print("No has elegido una grafica correcta elige box o bar")
+        axes[indice].set_title(f"Relación columna {col}, con {dependiente}")
+        axes[indice].set_xlabel("")
+        plt.tight_layout()
